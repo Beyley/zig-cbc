@@ -28,7 +28,11 @@ pub fn CBC(comptime BlockCipher: anytype) type {
 
         /// Return the length of the ciphertext given the length of the plaintext.
         pub fn paddedLength(length: usize) usize {
-            return (std.math.divCeil(usize, length + 1, EncryptCtx.block_length) catch unreachable) * EncryptCtx.block_length;
+            // If it's not already a multiple of the block length, pad it to be so
+            if (length % EncryptCtx.block_length != 0)
+                return (std.math.divCeil(usize, length + 1, EncryptCtx.block_length) catch unreachable) * EncryptCtx.block_length;
+
+            return length;
         }
 
         /// Return the maximum length of the plaintext given a ciphertext length.
